@@ -2,8 +2,8 @@ import React from 'react'
 
 const Header = () => {
   return (
-    <header>
-      <span className="slogan">Movies</span>
+    <header className='p-10'>
+      <span className="slogan text-4xl font-bold">Movies</span>
     </header>
   )
 }

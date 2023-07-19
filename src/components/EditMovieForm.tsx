@@ -1,28 +1,40 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { selectAllMovies, movieEdited } from "../store/moviesSlice";
 
-const EditMovieForm = ( ) => {
+const EditMovieForm = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const movies = useSelector(selectAllMovies);
   const filteredMovie = movies.filter((movie) => movie.id == id);
   const theMovie = filteredMovie[0];
-
-  const [title, setTitle] = useState("");
-  const [director, setDirector] = useState("");
-  const [distributor, setDistributor] = useState("");
-  const [rating, setRating] = useState(0);
-  const [votes, setVotes] = useState(0);
-  const [showSuccess, setShowSuccess] = useState(false);
-
   const nameInputsMaxLength = 36;
-  const validationLengthError = (input: string): null | string => {
+
+  //movie properties
+  const [title, setTitle] = useState(theMovie.title);
+  const [director, setDirector] = useState(theMovie.director);
+  const [distributor, setDistributor] = useState(theMovie.distributor);
+  const [rating, setRating] = useState(theMovie.imdb_rating);
+  const [votes, setVotes] = useState(theMovie.imdb_votes);
+
+  //errors|success states
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [alreadyExistsError, setAlreadyExistsError] = useState("");
+  const [movieLengthErr, setMovieLengthErr] = useState("");
+  const [directorLegthErr, setDirectorLegthErr] = useState("");
+  const [distributorLegthErr, setDistributorLegthErr] = useState("");
+  const [ratingLesThanZero, setRatingLesThanZero] = useState("");
+  const [ratingGreaterThanMax, setRatingGreaterThanMax] = useState("");
+  const [votesLesThanZero, setVotesLesThanZero] = useState("");
+  const [votesGreaterThanMax, setVotesGreaterThanMax] = useState("");
+
+  //validations
+  const validationLengthError = (input: string): string => {
     return input.length == nameInputsMaxLength
       ? `Max symbols for this field (${nameInputsMaxLength}) reached`
-      : null;
+      : "";
   };
   const lesThanZero = (value: number): string => {
     return value < 0 ? `Enter positive number` : "";
@@ -36,18 +48,30 @@ const EditMovieForm = ( ) => {
         movie.title.toString().toLocaleLowerCase() ===
           title.toLocaleLowerCase() && movie.id.toString() !== id
     );
-    
+
     return exist.length != 0 ? `${title} already exist in database` : "";
   };
 
-  const movieLengthErr = validationLengthError(title);
-  const directorLegthErr = validationLengthError(director);
-  const distributorLegthErr = validationLengthError(distributor);
-  const ratingLesThanZero = lesThanZero(rating);
-  const votesLesThanZero = lesThanZero(votes);
-  const ratingGreaterThanMax = greaterThanMax(rating, 10.0);
-  const votesGreaterThanMax = greaterThanMax(votes, 99999);
-  const alreadyExistsError = alreadyExists(title);
+  useEffect(() => {
+    setAlreadyExistsError(alreadyExists(title));
+    setMovieLengthErr(validationLengthError(title));
+  }, [title]);
+  useEffect(() => {
+    setDirectorLegthErr(validationLengthError(director));
+  }, [director]);
+  useEffect(() => {
+    setDistributorLegthErr(validationLengthError(distributor));
+  }, [distributor]);
+
+  useEffect(() => {
+    setRatingLesThanZero(lesThanZero(rating));
+    setRatingGreaterThanMax(greaterThanMax(rating, 10.0));
+  }, [rating]);
+
+  useEffect(() => {
+    setVotesLesThanZero(lesThanZero(votes));
+    setVotesGreaterThanMax(greaterThanMax(votes, 99999));
+  }, [votes]);
 
   const canSubmit =
     !alreadyExistsError &&
@@ -58,6 +82,7 @@ const EditMovieForm = ( ) => {
     !ratingGreaterThanMax &&
     !votesLesThanZero &&
     !votesGreaterThanMax;
+
   const onTitleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setTitle(e.target.value);
   const onDirectorChange = (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -82,32 +107,33 @@ const EditMovieForm = ( ) => {
         imdb_votes: votes,
       })
     );
+
     setShowSuccess(true);
-    setTitle("");
-    setDirector("");
-    setDistributor("");
-    setRating(0);
-    setVotes(0);
     setTimeout(() => {
       navigate("/");
     }, 2000);
   };
+
   return (
     <>
       <section>
         <div>
           {showSuccess ? (
-            <span className="successMsg">Movie successfully edited</span>
+            <span className="relative p-4 bg-successGreen text-white font-bold rounded-md">
+              Movie successfully updated
+            </span>
           ) : (
             ""
           )}
         </div>
         <form className="movieForm" data-testid="updateForm">
-          <label htmlFor="movieTitle">Movie title</label>
+          <label htmlFor="movieTitle" className="text-xl">
+            Movie title
+          </label>
           <input
             type="text"
             id="movieTitle"
-            className="formInput"
+            className="formInput block w-72 text-xl border border-primary rounded mx-auto mb-2.5 p-1 transition-all"
             name="movieTitle"
             data-testid="movieTitle"
             value={title}
@@ -119,11 +145,13 @@ const EditMovieForm = ( ) => {
             {movieLengthErr}
             {alreadyExistsError}
           </div>
-          <label htmlFor="directorName">Director name</label>
+          <label htmlFor="directorName" className="text-xl">
+            Director name
+          </label>
           <input
             type="text"
             id="directorName"
-            className="formInput"
+            className="formInput block w-72 text-xl border border-primary rounded mx-auto mb-2.5 p-1 transition-all"
             name="directorName"
             data-testid="directorName"
             value={director}
@@ -134,11 +162,13 @@ const EditMovieForm = ( ) => {
           <div data-testid="directorNameError" style={{ color: "red" }}>
             {directorLegthErr}
           </div>
-          <label htmlFor="distributorName">Distributor name</label>
+          <label htmlFor="distributorName" className="text-xl">
+            Distributor name
+          </label>
           <input
             type="text"
             id="distributorName"
-            className="formInput"
+            className="formInput block w-72 text-xl border border-primary rounded mx-auto mb-2.5 p-1 transition-all"
             name="distributorName"
             data-testid="distributorName"
             value={distributor}
@@ -149,12 +179,14 @@ const EditMovieForm = ( ) => {
           <div data-testid="distributorNameError" style={{ color: "red" }}>
             {distributorLegthErr}
           </div>
-          <label htmlFor="ratingInput">Rating</label>
+          <label htmlFor="ratingInput" className="text-xl">
+            Rating
+          </label>
           <input
             type="number"
             step=".1"
             id="ratingInput"
-            className="formInput inputNumbers"
+            className="formInput block w-24 text-xl border border-primary rounded mx-auto mb-2.5 p-1 transition-all"
             name="ratingInput"
             data-testid="rating"
             value={rating}
@@ -165,24 +197,26 @@ const EditMovieForm = ( ) => {
             {ratingLesThanZero}
             {ratingGreaterThanMax}
           </div>
-          <label htmlFor="votesInput">Votes</label>
+          <label htmlFor="votesInput" className="text-xl">
+            Votes
+          </label>
           <input
             type="number"
             id="votesInput"
-            className="formInput inputNumbers"
+            className="formInput block w-24 text-xl border border-primary rounded mx-auto mb-2.5 p-1 transition-all"
             name="votesInput"
             data-testid="votes"
             value={votes}
             onChange={onVotesChange}
             placeholder={theMovie.imdb_votes.toString()}
           />
-          <div ata-testid="votesError" style={{ color: "red" }}>
+          <div data-testid="votesError" style={{ color: "red" }}>
             {votesLesThanZero}
             {votesGreaterThanMax}
           </div>
           <button
             data-testid="updateMovieSubmit"
-            className="actionButton"
+            className="actionButton enabled:bg-thirdGray text-black text-md font-bold p-1 border border-primary rounded-md cursor-pointer transition-all enabled:hover:bg-primary enabled:hover:text-white disabled: bg-disabledRed"
             type="submit"
             onClick={onEditMovieClicked}
             disabled={!Boolean(canSubmit)}

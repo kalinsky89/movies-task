@@ -2,16 +2,22 @@ import { render, screen } from "@testing-library/react";
 import EditMovieForm from "../EditMovieForm";
 import { Provider } from "react-redux";
 import { store } from "../../store/store";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, MemoryRouter } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import { act } from "react-dom/test-utils";
 
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useParams: () => ({
+    id: "12",
+  }),
+}));
 describe("Test Edit Movie Form Component", () => {
   beforeEach(() => {
     render(
       <Provider store={store}>
         <BrowserRouter>
-          <EditMovieForm/>
+          <EditMovieForm />
         </BrowserRouter>
       </Provider>
     );
@@ -23,7 +29,7 @@ describe("Test Edit Movie Form Component", () => {
     const inputDistributorName = screen.getByTestId("distributorName");
     const inputRating = screen.getByTestId("rating");
     const inputVotes = screen.getByTestId("votes");
-    const buttonSbmt = screen.getByTestId("addMovieSubmit");
+    const buttonSbmt = screen.getByTestId("updateMovieSubmit");
     expect(inputMovieTitle).toBeInTheDocument;
     expect(inputDirectorName).toBeInTheDocument;
     expect(inputDistributorName).toBeInTheDocument;
@@ -33,7 +39,7 @@ describe("Test Edit Movie Form Component", () => {
   });
   test("validation length movie title name should fail", () => {
     const inputMovieTitle = screen.getByTestId("movieTitle");
-    const movieName = "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz";
+    const movieName = "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz";
     const error = screen.getByTestId("movieTitleError");
     act(() => {
       userEvent.type(inputMovieTitle, movieName);
@@ -90,6 +96,7 @@ describe("Test Edit Movie Form Component", () => {
     const rating = "11.1";
     const error = screen.getByTestId("ratingError");
     act(() => {
+      userEvent.clear(inputRating);
       userEvent.type(inputRating, rating);
     });
     expect(error).toHaveTextContent("Enter number between 0 and 10");
@@ -118,12 +125,12 @@ describe("Test Edit Movie Form Component", () => {
   test("validation votes negative value should be trigered", () => {
     const inputVotes = screen.getByTestId("votes");
     const votes = "-1";
-    const error = screen.getByTestId("votesError");
-    const buttonSbmt = screen.getByTestId("addMovieSubmit");
+    const buttonSbmt = screen.getByTestId("updateMovieSubmit");
     act(() => {
       userEvent.clear(inputVotes);
       userEvent.type(inputVotes, votes);
     });
+    const error = screen.getByTestId("votesError");
     expect(error).toHaveTextContent("Enter positive number");
     expect(buttonSbmt).toBeDisabled();
   });

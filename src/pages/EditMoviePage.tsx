@@ -3,10 +3,10 @@ import EditMovieForm from '../components/EditMovieForm'
 
 const EditMoviePage = () => {
   return (
-    <div>
-      <h1  className="page-title">Update Movie</h1>
+    <main className="min-h-screenNotFull flex flex-col ">
+      <h1  className="page-title text-3xl font-bold py-5">Update Movie</h1>
       <EditMovieForm />
-    </div>
+    </main>
   )
 }
 
