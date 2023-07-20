@@ -31,34 +31,50 @@ const EditMovieForm = () => {
   const [votesGreaterThanMax, setVotesGreaterThanMax] = useState("");
 
   //validations
-  const validationLengthError = (input: string): string => {
-    return input.length == nameInputsMaxLength
-      ? `Max symbols for this field (${nameInputsMaxLength}) reached`
-      : "";
-  };
-  const lesThanZero = (value: number): string => {
-    return value < 0 ? `Enter positive number` : "";
-  };
-  const greaterThanMax = (value: number, maxAllowed: number): string => {
-    return value > maxAllowed ? `Enter number between 0 and ${maxAllowed}` : "";
-  };
-  const alreadyExists = (title: string): string => {
-    const exist = movies.filter(
-      (movie) =>
-        movie.title.toString().toLocaleLowerCase() ===
-          title.toLocaleLowerCase() && movie.id.toString() !== id
-    );
+  const validationLengthError = useCallback(
+    (input: string): string => {
+      return input.length == nameInputsMaxLength
+        ? `Max symbols for this field (${nameInputsMaxLength}) reached`
+        : "";
+    },
+    [title, director, distributor]
+  );
+  const lesThanZero = useCallback(
+    (value: number): string => {
+      return value < 0 ? `Enter positive number` : "";
+    },
+    [rating, votes]
+  );
+  const greaterThanMax = useCallback(
+    (value: number, maxAllowed: number): string => {
+      return value > maxAllowed
+        ? `Enter number between 0 and ${maxAllowed}`
+        : "";
+    },
+    [rating, votes]
+  );
+  const alreadyExists = useCallback(
+    (title: string): string => {
+      const exist = movies.filter(
+        (movie) =>
+          movie.title.toString().toLocaleLowerCase() ===
+            title.toLocaleLowerCase() && movie.id.toString() !== id
+      );
 
-    return exist.length != 0 ? `${title} already exist in database` : "";
-  };
+      return exist.length != 0 ? `${title} already exist in database` : "";
+    },
+    [title]
+  );
 
   useEffect(() => {
     setAlreadyExistsError(alreadyExists(title));
     setMovieLengthErr(validationLengthError(title));
   }, [title]);
+
   useEffect(() => {
     setDirectorLegthErr(validationLengthError(director));
   }, [director]);
+
   useEffect(() => {
     setDistributorLegthErr(validationLengthError(distributor));
   }, [distributor]);
