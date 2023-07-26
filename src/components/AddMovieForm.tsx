@@ -1,24 +1,58 @@
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { selectAllMovies, movieAdded } from "../store/moviesSlice";
+import {
+  addNewMovie,
+  getMoviesStatus,
+  getMoviesError,
+  fetchMovies,
+} from "../store/moviesSlice";
+import { AppDispatch } from "../store/store";
 
 const AddMovieForm = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const [title, setTitle] = useState("");
   const [director, setDirector] = useState("");
   const [distributor, setDistributor] = useState("");
   const [rating, setRating] = useState(0);
   const [votes, setVotes] = useState(0);
-  // const [showSuccess, setShowSuccess] = useState(false);
-  const movies = useSelector(selectAllMovies);
-  const dispatch = useDispatch();
+  const moviesStatus = useSelector(getMoviesStatus);
+  const error = useSelector(getMoviesError);
+  // const dispatch = useDispatch();
+  console.log(`status:${moviesStatus}`);
+  // dispatch(fetchMovies()); //????
+  useEffect(()=>{
+    if (moviesStatus === 'idle') {
+      console.log("fetch");
+      dispatch(fetchMovies());
+    }else{
+      console.log("status not idle");
+    }
+  }, [])
+    
+ let message;
+  if(moviesStatus === 'loading'){
+    console.log("add movie Fetch status:loading")
+    message= "Loading data..."
+  }else if(moviesStatus === 'failed'){
+    console.log("add movie Fetch status:failed")
+    message= "Loading data Failed"
+  }else if(moviesStatus === 'succeeded'){
+    console.log("add movie Fetch status:success")
+    message= "Loading data succeeded"
+  }
+
+  const movies = useSelector(selectAllMovies); //????
+  console.log(`Add movies: ${movies}`);
   const navigate = useNavigate();
   const nameInputsMaxLength = 36;
   const lastArrId = Number(movies[movies.length - 1].id);
 
-  //errors|success states
+  //errors|success states | addRequestStatus
   const [showSuccess, setShowSuccess] = useState(false);
+  const [addRequestStatus, setAddRequesStatus] = useState("idle");
   const [alreadyExistsError, setAlreadyExistsError] = useState("");
   const [movieLengthErr, setMovieLengthErr] = useState("");
   const [directorLegthErr, setDirectorLegthErr] = useState("");
@@ -70,14 +104,6 @@ const AddMovieForm = () => {
     setVotesLesThanZero(lesThanZero(votes));
     setVotesGreaterThanMax(greaterThanMax(votes, 99999));
   }, [votes]);
-  // const movieLengthErr = validationLengthError(title);
-  // const directorLegthErr = validationLengthError(director);
-  // const distributorLegthErr = validationLengthError(distributor);
-  // const ratingLesThanZero = lesThanZero(rating);
-  // const votesLesThanZero = lesThanZero(votes);
-  // const ratingGreaterThanMax = greaterThanMax(rating, 10.0);
-  // const votesGreaterThanMax = greaterThanMax(votes, 99999);
-  // const alreadyExistsError = alreadyExists(title);
 
   const canSubmit =
     title &&
@@ -90,7 +116,8 @@ const AddMovieForm = () => {
     !ratingLesThanZero &&
     !ratingGreaterThanMax &&
     !votesLesThanZero &&
-    !votesGreaterThanMax;
+    !votesGreaterThanMax &&
+    addRequestStatus === "idle";
   const onTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
   };
@@ -107,31 +134,32 @@ const AddMovieForm = () => {
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     if (canSubmit) {
+      setAddRequesStatus("pending");
       e.preventDefault();
-      dispatch(
-        movieAdded({
-          id: lastArrId + 1,
-          title,
-          director,
-          distributor,
-          imdb_rating: Number(rating),
-          imdb_votes: Number(votes),
-        })
-      );
-      setShowSuccess(true);
-      // setTitle("");
-      // setDirector("");
-      // setDistributor("");
-      // setRating(0);
-      // setVotes(0);
-      setTimeout(() => {
-        navigate("/");
-      }, 2000);
+      try {
+        dispatch(
+          addNewMovie({
+            id: lastArrId + 1,
+            title,
+            director,
+            distributor,
+            imdb_rating: Number(rating),
+            imdb_votes: Number(votes),
+          })
+        );
+        setShowSuccess(true);
+        setTimeout(() => {
+          navigate("/");
+        }, 2000);
+      } catch {
+        console.log("Failed to add movie");
+      }
     }
   };
 
   return (
     <>
+      {message}
       <h2 className="text-2xl font-bold py-5">Fill the form bellow</h2>
       {showSuccess ? (
         <span
