@@ -1,23 +1,46 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { selectAllMovies, movieEdited } from "../store/moviesSlice";
+import {
+  selectAllMovies,
+  movieEdited,
+  getMoviesStatus,
+} from "../store/moviesSlice";
+import { updateAMovie, fetchMovies } from "../store/moviesSlice";
+import { AppDispatch } from "../store/store";
 
 const EditMovieForm = () => {
   const { id } = useParams();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const movies = useSelector(selectAllMovies);
+  const moviesStatus = useSelector(getMoviesStatus);
   const filteredMovie = movies.filter((movie) => movie.id == id);
   const theMovie = filteredMovie[0];
   const nameInputsMaxLength = 36;
+  const [updateRequesStatus, setUpdateRequesStatus] = useState("idle");
 
-  //movie properties
-  const [title, setTitle] = useState(theMovie.title);
-  const [director, setDirector] = useState(theMovie.director);
-  const [distributor, setDistributor] = useState(theMovie.distributor);
-  const [rating, setRating] = useState(theMovie.imdb_rating);
-  const [votes, setVotes] = useState(theMovie.imdb_votes);
+  useEffect(() => {
+    if (moviesStatus === "idle") {
+      console.log("fetch");
+      dispatch(fetchMovies());
+    }
+  }, []);
+
+  const [title, setTitle] = useState("");
+  const [director, setDirector] = useState("");
+  const [distributor, setDistributor] = useState("");
+  const [rating, setRating] = useState(0);
+  const [votes, setVotes] = useState(0);
+  useEffect(() => {
+    if (filteredMovie.length === 1) {
+      setTitle(theMovie.title);
+      setDirector(theMovie.director);
+      setDistributor(theMovie.distributor);
+      setRating(theMovie.imdb_rating);
+      setVotes(theMovie.imdb_votes);
+    }
+  }, [filteredMovie.length]);
 
   //errors|success states
   const [showSuccess, setShowSuccess] = useState(false);
@@ -66,6 +89,19 @@ const EditMovieForm = () => {
     [title]
   );
 
+  // useEffect(()=>{
+  //   if(moviesStatus === 'loading'){
+  //     console.log("update movie Fetch status:loading")
+  //     message= "Loading data..."
+  //   }else if(moviesStatus === 'failed'){
+  //     console.log("update movie Fetch status:failed")
+  //     message= "Loading data Failed"
+  //   }else if(moviesStatus === 'succeeded'){
+  //     console.log("update movie Fetch status:success")
+  //     message= "Data Loaded"
+  //   }
+  // }, [moviesStatus])
+
   useEffect(() => {
     setAlreadyExistsError(alreadyExists(title));
     setMovieLengthErr(validationLengthError(title));
@@ -97,7 +133,8 @@ const EditMovieForm = () => {
     !ratingLesThanZero &&
     !ratingGreaterThanMax &&
     !votesLesThanZero &&
-    !votesGreaterThanMax;
+    !votesGreaterThanMax &&
+    updateRequesStatus === "idle";
 
   const onTitleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setTitle(e.target.value);
@@ -113,21 +150,25 @@ const EditMovieForm = () => {
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.preventDefault();
-    dispatch(
-      movieEdited({
-        id: id,
-        title,
-        director,
-        distributor,
-        imdb_rating: Number(rating),
-        imdb_votes: votes,
-      })
-    );
-
-    setShowSuccess(true);
-    setTimeout(() => {
-      navigate("/");
-    }, 2000);
+    try {
+      setUpdateRequesStatus("pending");
+      dispatch(
+        updateAMovie({
+          id: id,
+          title,
+          director,
+          distributor,
+          imdb_rating: Number(rating),
+          imdb_votes: votes,
+        })
+      );
+      setShowSuccess(true);
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
+    } catch (err) {
+      console.log("update failed");
+    }
   };
 
   return (
@@ -154,7 +195,7 @@ const EditMovieForm = () => {
             data-testid="movieTitle"
             value={title}
             onChange={onTitleChange}
-            placeholder={theMovie.title}
+            placeholder="Movie Title"
             maxLength={nameInputsMaxLength}
           />
           <div data-testid="movieTitleError" style={{ color: "red" }}>
@@ -172,7 +213,7 @@ const EditMovieForm = () => {
             data-testid="directorName"
             value={director}
             onChange={onDirectorChange}
-            placeholder={theMovie.director}
+            placeholder="Director Name"
             maxLength={nameInputsMaxLength}
           />
           <div data-testid="directorNameError" style={{ color: "red" }}>
@@ -189,7 +230,7 @@ const EditMovieForm = () => {
             data-testid="distributorName"
             value={distributor}
             onChange={onDistributorChange}
-            placeholder={theMovie.distributor}
+            placeholder="Distributor Name"
             maxLength={nameInputsMaxLength}
           />
           <div data-testid="distributorNameError" style={{ color: "red" }}>
@@ -207,7 +248,7 @@ const EditMovieForm = () => {
             data-testid="rating"
             value={rating}
             onChange={onRatingChange}
-            placeholder={theMovie.imdb_rating.toString()}
+            placeholder="Rating"
           />
           <div data-testid="ratingError" style={{ color: "red" }}>
             {ratingLesThanZero}
@@ -224,7 +265,7 @@ const EditMovieForm = () => {
             data-testid="votes"
             value={votes}
             onChange={onVotesChange}
-            placeholder={theMovie.imdb_votes.toString()}
+            placeholder="Votes"
           />
           <div data-testid="votesError" style={{ color: "red" }}>
             {votesLesThanZero}

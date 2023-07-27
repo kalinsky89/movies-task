@@ -1,8 +1,8 @@
 import React from "react";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { selectAllMovies, movieAdded } from "../store/moviesSlice";
+import { selectAllMovies } from "../store/moviesSlice";
 import {
   addNewMovie,
   getMoviesStatus,
@@ -20,38 +20,28 @@ const AddMovieForm = () => {
   const [votes, setVotes] = useState(0);
   const moviesStatus = useSelector(getMoviesStatus);
   const error = useSelector(getMoviesError);
-  // const dispatch = useDispatch();
-  console.log(`status:${moviesStatus}`);
-  // dispatch(fetchMovies()); //????
-  useEffect(()=>{
-    if (moviesStatus === 'idle') {
-      console.log("fetch");
-      dispatch(fetchMovies());
-    }else{
-      console.log("status not idle");
-    }
-  }, [])
-    
+  
+  // console.log(`status:${moviesStatus}`);
+     
  let message;
   if(moviesStatus === 'loading'){
-    console.log("add movie Fetch status:loading")
+    // console.log("add movie Fetch status:loading")
     message= "Loading data..."
   }else if(moviesStatus === 'failed'){
-    console.log("add movie Fetch status:failed")
+    // console.log("add movie Fetch status:failed")
     message= "Loading data Failed"
   }else if(moviesStatus === 'succeeded'){
-    console.log("add movie Fetch status:success")
-    message= "Loading data succeeded"
+    // console.log("add movie Fetch status:success")
+    message= "Data Loaded"
   }
 
-  const movies = useSelector(selectAllMovies); //????
-  console.log(`Add movies: ${movies}`);
+  const movies = useSelector(selectAllMovies);
   const navigate = useNavigate();
   const nameInputsMaxLength = 36;
-  const lastArrId = Number(movies[movies.length - 1].id);
 
   //errors|success states | addRequestStatus
   const [showSuccess, setShowSuccess] = useState(false);
+  const [nextMovieId, setNexMovieId] = useState(0)
   const [addRequestStatus, setAddRequesStatus] = useState("idle");
   const [alreadyExistsError, setAlreadyExistsError] = useState("");
   const [movieLengthErr, setMovieLengthErr] = useState("");
@@ -61,6 +51,19 @@ const AddMovieForm = () => {
   const [ratingGreaterThanMax, setRatingGreaterThanMax] = useState("");
   const [votesLesThanZero, setVotesLesThanZero] = useState("");
   const [votesGreaterThanMax, setVotesGreaterThanMax] = useState("");
+
+  useEffect(()=>{
+    if (moviesStatus === 'idle') {
+      console.log("fetch");
+      dispatch(fetchMovies());
+    }
+  }, [])
+
+  useEffect(()=>{
+    if(movies.length>0){
+      setNexMovieId(Number(movies[movies.length - 1].id+1))
+    }
+  }, [movies])
 
   //validations
   const validationLengthError = (input: string): string => {
@@ -139,7 +142,8 @@ const AddMovieForm = () => {
       try {
         dispatch(
           addNewMovie({
-            id: lastArrId + 1,
+            // id: lastArrId + 1,
+            id:nextMovieId,
             title,
             director,
             distributor,

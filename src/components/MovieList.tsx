@@ -6,6 +6,7 @@ import {
   getMoviesStatus,
   getMoviesError,
   fetchMovies,
+  deleteAMovie,
   movieDeleted,
 } from "../store/moviesSlice";
 import { Link } from "react-router-dom";
@@ -14,7 +15,7 @@ import { FiEdit, FiTrash2 } from "react-icons/fi";
 const MovieList = () => {
   const dispatch = useDispatch<AppDispatch>();
   const movies = useSelector(selectAllMovies);
-console.log(`list movies: ${JSON.stringify(movies)}`)
+// console.log(`list movies: ${JSON.stringify(movies)}`)
   const moviesStatus = useSelector(getMoviesStatus);
   const error = useSelector(getMoviesError);
   const [search, setSearch] = useState("");
@@ -22,6 +23,7 @@ console.log(`list movies: ${JSON.stringify(movies)}`)
 
   useEffect(()=>{
     if(moviesStatus==='idle'){
+      console.log('fetch')
       dispatch(fetchMovies())
     }
   }, [moviesStatus, dispatch])
@@ -32,7 +34,12 @@ console.log(`list movies: ${JSON.stringify(movies)}`)
     setSearch(e.target.value);
   };
   const deleteMovie = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    dispatch(movieDeleted(e.currentTarget.id));
+    try{
+      dispatch(deleteAMovie(e.currentTarget.id));
+      // dispatch(movieDeleted(e.currentTarget.id));
+    }catch {
+      console.log('delete movie failed')
+    }
     if (search !== "") {
       setSearch("");
     }

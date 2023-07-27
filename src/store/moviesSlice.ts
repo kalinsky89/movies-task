@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "./store";
 import data from "../data.json";
 import axios from "axios";
+import { act } from "react-dom/test-utils";
 
 export interface Movies {
   id: number | string | any;
@@ -29,11 +30,36 @@ export const fetchMovies = createAsyncThunk("movies/fetchMovies", async () => {
   }
 });
 
-export const addNewMovie = createAsyncThunk("movies/addNewMovie", async (newMovie:Movies) => {
-  const responce = await axios.post(url, newMovie);
-  console.log(`resp data: ${responce.data}`);
-  return responce.data;
-});
+export const addNewMovie = createAsyncThunk(
+  "movies/addNewMovie",
+  async (newMovie: Movies) => {
+    const responce = await axios.post(url, newMovie);
+    // console.log(`resp data: ${JSON.stringify(responce.data)}`);
+    return responce.data;
+  }
+);
+
+export const deleteAMovie = createAsyncThunk(
+  "movies/deleteMovie",
+  async (id: string | number) => {
+    const delEndPoint = `${url}/${id}`;
+    const responce = await axios.delete(delEndPoint, {data:{id:id}});
+    // console.log("slice deletepay:", JSON.stringify(responce))
+    return id
+  }
+);
+
+export const updateAMovie = createAsyncThunk(
+  "movies/updateAMovie",
+  async (movieToUpdate: Movies) => {
+    const responce = await axios.put(
+      `${url}/${movieToUpdate.id}`,
+      movieToUpdate
+    );
+    // console.log("update responce", JSON.stringify(responce.data))
+    return responce.data;
+  }
+);
 
 const iniTialStateValue: dataState = {
   data: [],
@@ -82,9 +108,26 @@ const moviesSlice = createSlice({
         state.error = action.error.message;
         console.log("slice:rejected");
       })
-      .addCase(addNewMovie.fulfilled, (state,action)=>{
-        state.data.push(action.payload)
+      .addCase(addNewMovie.fulfilled, (state, action) => {
+        state.data.push(action.payload);
       })
+      .addCase(deleteAMovie.fulfilled, (state, action) => {
+        state.data = state.data.filter(
+          (movie) => Number(movie.id) !== Number(action.payload)
+        );
+      })
+      .addCase(updateAMovie.fulfilled, (state, action) => {
+        state.data.map((movie) => {
+          if (movie.id == action.payload.id) {
+            movie.title = action.payload.title;
+            movie.director = action.payload.director;
+            movie.distributor = action.payload.distributor;
+            movie.imdb_rating = action.payload.imdb_rating;
+            movie.imdb_votes = action.payload.imdb_votes;
+          }
+        });
+        return state;
+      });
   },
 });
 
