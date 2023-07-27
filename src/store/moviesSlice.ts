@@ -43,7 +43,7 @@ export const deleteAMovie = createAsyncThunk(
   "movies/deleteMovie",
   async (id: string | number) => {
     const delEndPoint = `${url}/${id}`;
-    const responce = await axios.delete(delEndPoint, {data:{id:id}});
+    const responce = await axios.delete(delEndPoint);
     // console.log("slice deletepay:", JSON.stringify(responce))
     return id
   }
