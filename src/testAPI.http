@@ -1,13 +1,39 @@
-POST https://retoolapi.dev/iXFthB/data HTTP/1.1
-Content-Type: : application/json
+POST https://retoolapi.dev/iXFthB/data
+accept: application/json
+content-Type: application/json
 
- {
+{
     "id": 45,
-    "title": "Big test 2",
+    "title": "Kalin test 1",
     "director": "Kalin",
-    "imdb_votes": 8342,
+    "imdb_votes": "3343",
     "distributor": "MGMsdf",
-    "imdb_rating": 9
-  }
+    "imdb_rating": "2.5"
+ }
+###
+POST https://retoolapi.dev/iXFthB/data
+accept: application/json
+content-Type: application/json
 
+{
+    "id": 46,
+    "title": "Kalin test 2",
+    "director": "Kalin",
+    "imdb_votes": "3343",
+    "distributor": "MGMsdf",
+    "imdb_rating": "2.5"
+ }
+###
+PUT  https://retoolapi.dev/iXFthB/data/47
+accept: application/json
+content-Type: application/json
+
+{
+    "id": 47,
+    "title":"Kalin patch 123",
+    "director":"Ivan Nikolov",
+    "imdb_votes": "2453",
+    "distributor": "Boqna",
+    "imdb_rating": "1.7"
+ }
 ###

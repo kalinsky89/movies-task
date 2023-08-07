@@ -1,3 +1,126 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Header */
+.page-header {
+  @apply p-10;
+}
+.slogan {
+  @apply text-4xl font-bold;
+}
+/* Navigation */
+.navigation {
+  @apply p-3 bg-primary;
+}
+
+.listItems {
+  @apply inline-block my-0 mx-1.5 text-white text-lg font-bold list-none;
+}
+
+.navLinks {
+  @apply text-white bg-primary text-base no-underline p-2.5 rounded-lg transition-all hover:bg-secondary hover:text-black;
+}
+
+/* Dark=>Light mode */
+.light {
+  @apply bg-white transition-all;
+}
+
+.dark {
+  @apply bg-gray-600  transition-all;
+}
+.dark .tableRow {
+  @apply odd:bg-gray-600 hover:bg-secondary;
+}
+
+.modes {
+  @apply inline-block mr-6 ml-6;
+}
+
+.switch {
+  @apply relative inline-block w-16 h-9;
+}
+
+.switch input {
+  @apply opacity-0 w-0 h-0;
+}
+.slider {
+  @apply absolute cursor-pointer top-0 left-0 right-0 bottom-0 bg-gray-400 rounded-full;
+}
+.pseudo {
+  @apply before:absolute before:h-7 before:w-7 before:top-1 before:left-1 before:bottom-1 before:bg-white before:rounded-full before:transition-all;
+}
+
+input:checked + .pseudo {
+  @apply before:translate-x-7 before:bg-gray-500;
+}
+.switcherWrapper {
+  @apply pb-2;
+}
+/* Search */
+.search-wrapper {
+  @apply p-5 mb-5;
+}
+.search-label {
+  @apply text-3xl py-5 px-5;
+}
+.search-input {
+  @apply w-72 sm:w-80 h-10 text-xl p-2.5 border-x-2 border-y-2 rounded focus:border-primary;
+}
+
+/* Movies Table */
+.movie-list{
+    @apply w-full border border-collapse my-0 mx-auto
+}
+.tableRow {
+  @apply odd:bg-white even:bg-primary hover:bg-secondary transition-all;
+}
+.tableRow td,
+.tableRow th {
+  @apply border border-primary;
+}
+.tableHeadings {
+  @apply p-1 text-mobThSmall sm:text-base text-white;
+}
+.tableMovieItem {
+  @apply p-px text-center sm:p-1 text-mobSmall sm:text-base;
+}
+.actionDelete {
+  @apply p-px text-center sm:p-1 text-xs sm:text-base;
+}
+.actionDeleteIcon {
+  @apply hover:fill-red-400;
+}
+.actionEdit {
+  @apply p-1 text-xs sm:text-base;
+}
+.actionEditIcon {
+  @apply text-center my-0 mx-auto hover:fill-orange-300;
+}
+/* Add / Update forms */
+.formHeading{
+    @apply text-2xl font-bold py-5
+}
+.successMsg{
+    @apply relative p-4 bg-successGreen text-white font-bold rounded-md
+}
+.formLabel{
+ @apply text-xl
+}
+.formInput{
+    @apply block w-72 text-xl border border-primary rounded mx-auto mb-2.5 p-1 transition-all
+}
+.formInputSmall{
+    @apply w-24
+}
+.actionButton{
+    @apply enabled:bg-thirdGray text-black text-sm font-bold p-1 border border-primary rounded-md cursor-pointer transition-all enabled:hover:bg-primary enabled:hover:text-white 
+}
+
+  
+  
+/* FOOTER */
+.footer {
+  @apply w-full py-5 mt-5 bg-primary text-white;
+}

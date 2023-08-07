@@ -176,7 +176,7 @@ const EditMovieForm = () => {
       <section>
         <div>
           {showSuccess ? (
-            <span className="relative p-4 bg-successGreen text-white font-bold rounded-md">
+            <span className="successMsg">
               Movie successfully updated
             </span>
           ) : (
@@ -184,13 +184,13 @@ const EditMovieForm = () => {
           )}
         </div>
         <form className="movieForm" data-testid="updateForm">
-          <label htmlFor="movieTitle" className="text-xl">
+          <label htmlFor="movieTitle" className="formLabel">
             Movie title
           </label>
           <input
             type="text"
             id="movieTitle"
-            className="formInput block w-72 text-xl border border-primary rounded mx-auto mb-2.5 p-1 transition-all"
+            className="formInput"
             name="movieTitle"
             data-testid="movieTitle"
             value={title}
@@ -202,13 +202,13 @@ const EditMovieForm = () => {
             {movieLengthErr}
             {alreadyExistsError}
           </div>
-          <label htmlFor="directorName" className="text-xl">
+          <label htmlFor="directorName" className="formLabel">
             Director name
           </label>
           <input
             type="text"
             id="directorName"
-            className="formInput block w-72 text-xl border border-primary rounded mx-auto mb-2.5 p-1 transition-all"
+            className="formInput"
             name="directorName"
             data-testid="directorName"
             value={director}
@@ -219,13 +219,13 @@ const EditMovieForm = () => {
           <div data-testid="directorNameError" style={{ color: "red" }}>
             {directorLegthErr}
           </div>
-          <label htmlFor="distributorName" className="text-xl">
+          <label htmlFor="distributorName" className="formLabel">
             Distributor name
           </label>
           <input
             type="text"
             id="distributorName"
-            className="formInput block w-72 text-xl border border-primary rounded mx-auto mb-2.5 p-1 transition-all"
+            className="formInput"
             name="distributorName"
             data-testid="distributorName"
             value={distributor}
@@ -236,14 +236,14 @@ const EditMovieForm = () => {
           <div data-testid="distributorNameError" style={{ color: "red" }}>
             {distributorLegthErr}
           </div>
-          <label htmlFor="ratingInput" className="text-xl">
+          <label htmlFor="ratingInput" className="formLabel">
             Rating
           </label>
           <input
             type="number"
             step=".1"
             id="ratingInput"
-            className="formInput block w-24 text-xl border border-primary rounded mx-auto mb-2.5 p-1 transition-all"
+            className="formInput formInputSmall"
             name="ratingInput"
             data-testid="rating"
             value={rating}
@@ -254,13 +254,13 @@ const EditMovieForm = () => {
             {ratingLesThanZero}
             {ratingGreaterThanMax}
           </div>
-          <label htmlFor="votesInput" className="text-xl">
+          <label htmlFor="votesInput" className="formLabel">
             Votes
           </label>
           <input
             type="number"
             id="votesInput"
-            className="formInput block w-24 text-xl border border-primary rounded mx-auto mb-2.5 p-1 transition-all"
+            className="formInput formInputSmall"
             name="votesInput"
             data-testid="votes"
             value={votes}
@@ -273,7 +273,7 @@ const EditMovieForm = () => {
           </div>
           <button
             data-testid="updateMovieSubmit"
-            className="actionButton enabled:bg-thirdGray text-black text-md font-bold p-1 border border-primary rounded-md cursor-pointer transition-all enabled:hover:bg-primary enabled:hover:text-white disabled: bg-disabledRed"
+            className="actionButton disabled: bg-disabledRed"
             type="submit"
             onClick={onEditMovieClicked}
             disabled={!Boolean(canSubmit)}

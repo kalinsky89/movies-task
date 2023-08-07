@@ -32,7 +32,7 @@ const AddMovieForm = () => {
     message= "Loading data Failed"
   }else if(moviesStatus === 'succeeded'){
     // console.log("add movie Fetch status:success")
-    message= "Data Loaded"
+    message= ""
   }
 
   const movies = useSelector(selectAllMovies);
@@ -164,11 +164,11 @@ const AddMovieForm = () => {
   return (
     <>
       {message}
-      <h2 className="text-2xl font-bold py-5">Fill the form bellow</h2>
+      <h2 className="formHeading">Fill the form bellow</h2>
       {showSuccess ? (
         <span
           data-testid="successMsg"
-          className="relative p-4 bg-successGreen text-white font-bold rounded-md"
+          className="successMsg"
         >
           Movie successfully Added
         </span>
@@ -176,13 +176,13 @@ const AddMovieForm = () => {
         ""
       )}
       <form className="movieForm">
-        <label className="text-xl" htmlFor="movieTitle">
+        <label className="formLabel" htmlFor="movieTitle">
           Movie title
         </label>
         <input
           type="text"
           id="movieTitle"
-          className="formInput block w-72 text-xl border border-primary rounded mx-auto mb-2.5 p-1 transition-all"
+          className="formInput"
           name="movieTitle"
           data-testid="movieTitle"
           value={title}
@@ -194,13 +194,13 @@ const AddMovieForm = () => {
           {movieLengthErr}
           {alreadyExistsError}
         </div>
-        <label className="text-xl" htmlFor="directorName">
+        <label className="tformLabel" htmlFor="directorName">
           Director name
         </label>
         <input
           type="text"
           id="directorName"
-          className="formInput block w-72 text-xl border border-primary rounded mx-auto mb-2.5 p-1 transition-all"
+          className="formInput"
           name="directorName"
           data-testid="directorName"
           value={director}
@@ -211,13 +211,13 @@ const AddMovieForm = () => {
         <div data-testid="directorNameError" style={{ color: "red" }}>
           {directorLegthErr}
         </div>
-        <label className="text-xl" htmlFor="distributorName">
+        <label className="formLabel" htmlFor="distributorName">
           Distributor name
         </label>
         <input
           type="text"
           id="distributorName"
-          className="formInput block w-72 text-xl border border-primary rounded mx-auto mb-2.5 p-1 transition-all"
+          className="formInput"
           name="distributorName"
           data-testid="distributorName"
           value={distributor}
@@ -228,14 +228,14 @@ const AddMovieForm = () => {
         <div data-testid="distributorNameError" style={{ color: "red" }}>
           {distributorLegthErr}
         </div>
-        <label className="text-xl" htmlFor="ratingInput">
+        <label className="formLabel" htmlFor="ratingInput">
           Rating
         </label>
         <input
           type="number"
           step=".1"
           id="ratingInput"
-          className="formInput block w-24 text-xl border border-primary rounded mx-auto mb-2.5 p-1 transition-all"
+          className="formInput formInputSmall"
           name="ratingInput"
           data-testid="rating"
           value={rating}
@@ -246,13 +246,13 @@ const AddMovieForm = () => {
           {ratingLesThanZero}
           {ratingGreaterThanMax}
         </div>
-        <label className="text-xl" htmlFor="votesInput">
+        <label className="formLabel" htmlFor="votesInput">
           Votes
         </label>
         <input
           type="number"
           id="votesInput"
-          className="formInput block w-24 text-xl border border-primary rounded mx-auto mb-2.5 p-1 p-1 transition-all"
+          className="formInput formInputSmall"
           name="votesInput"
           data-testid="votes"
           value={votes}
@@ -265,7 +265,7 @@ const AddMovieForm = () => {
         </div>
         <button
           data-testid="addMovieSubmit"
-          className="actionButton enabled:bg-thirdGray text-black text-md font-bold p-1 border border-primary rounded-md cursor-pointer transition-all enabled:hover:bg-primary enabled:hover:text-white disabled: bg-disabledRed"
+          className="actionButton disabled: bg-disabledRed"
           type="submit"
           onClick={onAddMovieClicked}
           disabled={!Boolean(canSubmit)}

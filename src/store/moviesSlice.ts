@@ -1,8 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "./store";
-import data from "../data.json";
 import axios from "axios";
-import { act } from "react-dom/test-utils";
 
 export interface Movies {
   id: number | string | any;
@@ -34,7 +32,7 @@ export const addNewMovie = createAsyncThunk(
   "movies/addNewMovie",
   async (newMovie: Movies) => {
     const responce = await axios.post(url, newMovie);
-    // console.log(`resp data: ${JSON.stringify(responce.data)}`);
+    // console.log(`slice resp data: ${JSON.stringify(responce.data)}`);
     return responce.data;
   }
 );
@@ -43,7 +41,7 @@ export const deleteAMovie = createAsyncThunk(
   "movies/deleteMovie",
   async (id: string | number) => {
     const delEndPoint = `${url}/${id}`;
-    const responce = await axios.delete(delEndPoint);
+    await axios.delete(delEndPoint);
     // console.log("slice deletepay:", JSON.stringify(responce))
     return id
   }
@@ -56,7 +54,7 @@ export const updateAMovie = createAsyncThunk(
       `${url}/${movieToUpdate.id}`,
       movieToUpdate
     );
-    // console.log("update responce", JSON.stringify(responce.data))
+    // console.log("slice update responce", JSON.stringify(responce.data))
     return responce.data;
   }
 );
